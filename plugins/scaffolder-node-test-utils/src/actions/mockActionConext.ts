@@ -16,7 +16,10 @@
 
 import { PassThrough, Writable } from 'stream';
 import { getVoidLogger } from '@backstage/backend-common';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  mockCredentials,
+} from '@backstage/backend-test-utils';
 import { JsonObject } from '@backstage/types';
 import { ActionContext, TaskSecrets } from '@backstage/plugin-scaffolder-node';
 import * as winston from 'winston';
@@ -39,12 +42,14 @@ export const createMockActionContext = <
   templateInfo?: TemplateInfo;
   workspacePath?: string;
 }): ActionContext<TActionInput, TActionOutput> => {
+  const credentials = mockCredentials.user();
   const defaultContext = {
     logger: getVoidLogger(),
     logStream: new PassThrough(),
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
     input: {} as TActionInput,
+    getInitiatorCredentials: () => Promise.resolve(credentials),
   };
 
   const createDefaultWorkspace = () => ({
